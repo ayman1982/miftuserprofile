@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIFT USER PROFILE - برنامج إدارة العاملين والعهد الشخصية</title>
+  
+  <!-- خط احترافي من Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- ============================
+         AUTH SECTION (Login/Register)
+    ============================ -->
+    <section id="authSection" class="auth-wrapper">
+      <div class="card">
+        <div class="logo-center">
+          <img src="logo.png" alt="Logo" class="auth-logo">
+          <h2 class="auth-title">وزارة الاستثمار والتجارة الخارجية</h2>
+          <h3 class="auth-subtitle">برنامج إدارة العاملين والعهد الشخصية</h3>
+          <p class="auth-subtitle-en">MIFT USER PROFILE</p>
+        </div>
+
+        <div class="tabs">
+          <button id="btnLoginTab" class="tab-button active">تسجيل الدخول</button>
+          <button id="btnRegisterTab" class="tab-button">إنشاء حساب</button>
+        </div>
+
+        <!-- Login -->
+        <div id="loginFormBox" class="tab-content active">
+          <div class="form-group">
+            <label>البريد الإلكتروني</label>
+            <input type="email" id="loginEmail" placeholder="example@mift.gov.eg">
+          </div>
+          <div class="form-group">
+            <label>كلمة المرور</label>
+            <input type="password" id="loginPassword">
+          </div>
+          <button id="loginButton" class="btn primary full">دخول</button>
+        </div>
+
+        <!-- Register -->
+        <div id="registerFormBox" class="tab-content">
+          <div class="form-group">
+            <label>الاسم الكامل</label>
+            <input type="text" id="registerName">
+          </div>
+          <div class="form-group">
+            <label>البريد الإلكتروني</label>
+            <input type="email" id="registerEmail">
+          </div>
+          <div class="form-group">
+            <label>كلمة المرور</label>
+            <input type="password" id="registerPassword">
+          </div>
+          <div class="form-group">
+            <label>الدور</label>
+            <select id="registerRole">
+              <option value="user">مستخدم</option>
+              <option value="admin">مدير</option>
+              <option value="store">مخازن</option>
+            </select>
+          </div>
+          <button id="registerButton" class="btn primary full">تسجيل</button>
+        </div>
+
+        <div id="authMessage" class="message"></div>
+      </div>
+    </section>
+
+    <!-- ============================
+         DASHBOARD (After Login)
+    ============================ -->
+    <section id="dashboardSection" class="hidden">
+
+      <!-- Header -->
+      <header class="app-header">
+        <div class="logo-area">
+          <img src="logo.png" alt="Logo" class="app-logo">
+          <div class="header-text">
+            <div class="ministry-title">وزارة الاستثمار والتجارة الخارجية</div>
+            <div class="system-title">برنامج إدارة العاملين والعهد الشخصية</div>
+            <div class="system-title-en">MIFT USER PROFILE</div>
+          </div>
+        </div>
+        <div class="user-info-header">
+          <div class="user-details">
+            <div class="user-name-top" id="currentUserNameTop"></div>
+            <div class="user-role-top" id="currentUserRoleTop"></div>
+          </div>
+          <button id="logoutButtonTop" class="btn danger small">خروج</button>
+        </div>
+      </header>
+
+      <main class="app-main">
+        <div class="dashboard">
+
+          <!-- Sidebar -->
+          <aside class="sidebar">
+            <nav class="nav-menu">
+              <button class="nav-item" data-screen="usersAdminScreen">👥 إدارة المستخدمين</button>
+                            <button class="nav-item" data-screen="statsDashboardScreen">📊 Dashboard إحصائي</button>
+<button class="nav-item" data-screen="employeesScreen">👔 إدارة العاملين</button>
+              <button class="nav-item" data-screen="assetsScreen">📦 العهد الشخصية</button>
+              <button class="nav-item" data-screen="searchScreen">🔍 البحث</button>
+              <button class="nav-item" data-screen="storesScreen">🏢 المخازن</button>
+              <button class="nav-item" data-screen="storeBalancesScreen">📦 أرصدة العهد المخزنية</button>
+              <button id="logoutButton" class="nav-item danger">🚪 خروج</button>
+            </nav>
+          </aside>
+
+          <!-- Content Area -->
+          <div class="content">
+
+            <!-- ============ STATS DASHBOARD SCREEN ============ -->
+            <div id="statsDashboardScreen" class="screen hidden">
+              <h2>📊 Dashboard إحصائي</h2>
+
+              <div class="dash-cards">
+                <div class="dash-card">
+                  <div class="dash-title">إجمالي الموظفين</div>
+                  <div id="kpiEmployees" class="dash-value">—</div>
+                </div>
+                <div class="dash-card">
+                  <div class="dash-title">إجمالي العهد/الأصول</div>
+                  <div id="kpiAssets" class="dash-value">—</div>
+                </div>
+                <div class="dash-card">
+                  <div class="dash-title">إجمالي حركات المخزن</div>
+                  <div id="kpiStores" class="dash-value">—</div>
+                </div>
+              </div>
+
+              <div class="dash-grid">
+                <div class="dash-panel">
+                  <h3>توزيع الحركات حسب النوع</h3>
+                  <canvas id="movementTypeChart" height="140"></canvas>
+                  <div id="chartFallback" class="message info hidden" style="margin-top:10px;">
+                    ⚠️ لم يتم تحميل مكتبة الرسوم البيانية (Chart.js). سيتم عرض الأرقام بدون رسم.
+                  </div>
+                  <div id="movementTypeList" style="margin-top:10px;"></div>
+                </div>
+
+                <div class="dash-panel">
+                  <h3>أرصدة العهد المخزنية الحالية</h3>
+                  <table class="dash-table">
+                    <thead>
+                      <tr>
+                        <th>الفئة</th>
+                        <th>الافتتاحي</th>
+                        <th>الحالي</th>
+                      </tr>
+                    </thead>
+                    <tbody id="stockBalancesTbody"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="dash-panel">
+                <h3>آخر حركات مخزن</h3>
+                <table class="dash-table">
+                  <thead>
+                    <tr>
+                      <th>التاريخ</th>
+                      <th>نوع الحركة</th>
+                      <th>الوصف</th>
+                      <th>الجهة</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recentStoresTbody"></tbody>
+                </table>
+              </div>
+
+              <div style="margin-top:12px;">
+                <button id="refreshDashboardBtn" class="btn primary">تحديث</button>
+                <span id="dashboardStatus" style="margin-inline-start:10px;"></span>
+              </div>
+            </div>
+
+
+            <!-- ============ USERS ADMIN SCREEN ============ -->
+            <div id="usersAdminScreen" class="screen hidden">
+              <h2>👥 إدارة المستخدمين</h2>
+
+              <!-- Database Backup Section -->
+              <div class="inner-card">
+                <h3>🔒 تأمين قاعدة البيانات</h3>
+                <p>احتفظ بنسخة احتياطية كاملة من جميع البيانات</p>
+                <button class="btn primary" id="backupDatabaseButton">📥 تحميل نسخة احتياطية</button>
+                <div id="backupProgress" class="message info hidden">
+                  <span id="backupProgressText">جاري تأمين البيانات...</span>
+                </div>
+              </div>
+
+              <table id="usersTable">
+                <thead>
+                  <tr>
+                    <th>الاسم</th>
+                    <th>البريد</th>
+                    <th>الدور</th>
+                    <th>الحالة</th>
+                    <th>تغيير الدور</th>
+                    <th>الإجراءات</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+
+            <!-- ============ EMPLOYEES SCREEN ============ -->
+            <div id="employeesScreen" class="screen hidden">
+              <h2>👔 إدارة العاملين</h2>
+
+              <!-- Add Employee Form -->
+              <div class="inner-card">
+                <h3>إضافة / تحديث موظف</h3>
+                <form id="employeeForm">
+                  <div class="form-grid">
+                    <div class="form-group">
+                      <label>الرقم القومي *</label>
+                      <input type="text" id="empNationalId" required>
+                    </div>
+                    <div class="form-group">
+                      <label>الاسم *</label>
+                      <input type="text" id="empName" required>
+                    </div>
+                    <div class="form-group">
+                      <label>البريد الإلكتروني</label>
+                      <input type="email" id="empEmail">
+                    </div>
+                    <div class="form-group">
+                      <label>الوظيفة</label>
+                      <input type="text" id="empJob">
+                    </div>
+                    <div class="form-group">
+                      <label>القطاع</label>
+                      <input type="text" id="empSector">
+                    </div>
+                    <div class="form-group">
+                      <label>الإدارة المركزية</label>
+                      <input type="text" id="empCentralAdmin">
+                    </div>
+                    <div class="form-group">
+                      <label>الإدارة العامة</label>
+                      <input type="text" id="empGeneralAdmin">
+                    </div>
+                    <div class="form-group">
+                      <label>الإدارة الفرعية</label>
+                      <input type="text" id="empSubAdmin">
+                    </div>
+                    <div class="form-group">
+                      <label>التليفون</label>
+                      <input type="text" id="empPhone">
+                    </div>
+                    <div class="form-group">
+                      <label>العنوان</label>
+                      <input type="text" id="empLocation">
+                    </div>
+                  </div>
+                  <button type="submit" class="btn primary">✅ حفظ الموظف</button>
+                </form>
+              
+              <!-- Import Employees from Excel -->
+              <div class="inner-card" style="margin-top:1rem;">
+                <h3>⬆️ استيراد العاملين من ملف Excel</h3>
+                <p class="hint-text">
+                  ترتيب الأعمدة يجب أن يكون بالضبط:
+                  (الرقم القومي – الاسم – البريد - الوظيفة – القطاع – الإدارة المركزية – الإدارة العامة – الإدارة الفرعية – التليفون – العنوان)
+                </p>
+                <div class="form-grid">
+                  <div class="form-group full-width">
+                    <label>اختر ملف Excel</label>
+                    <input type="file" id="employeesExcelFile" accept=".xlsx,.xls">
+                  </div>
+                </div>
+                <button id="importEmployeesBtn" type="button" class="btn primary">⬆️ استيراد</button>
+                <div id="importEmployeesResult" class="message" style="margin-top:0.75rem; display:none;"></div>
+              </div>
+</div>
+
+              <!-- Search Employees -->
+              <div class="form-group mt-1">
+                <label>🔍 بحث في العاملين</label>
+                <input type="text" id="employeeSearch" class="search-input" placeholder="ابحث بالاسم أو الرقم القومي أو البريد...">
+              </div>
+
+              <!-- Employees Table -->
+              <div class="table-wrapper">
+                <table class="modern-table" id="employeesTable">
+                  <thead>
+                    <tr>
+                      <th>الرقم القومي</th>
+                      <th>الاسم</th>
+                      <th>البريد</th>
+                      <th>الوظيفة</th>
+                      <th>القطاع</th>
+                      <th>الإدارة المركزية</th>
+                      <th>الإدارة العامة</th>
+                      <th>الإدارة الفرعية</th>
+                      <th>التليفون</th>
+                      <th>العنوان</th>
+                      <th>الإجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- سيتم ملء الموظفين هنا -->
+                  </tbody>
+                </table>
+              
+              <!-- Pagination Controls -->
+              <div class="pagination-controls" id="employeesPagination">
+                <button id="employeesPrevPageBtn" class="btn small" type="button">⬅️ السابق</button>
+                <span id="employeesPageIndicator" class="page-indicator">صفحة 1</span>
+                <button id="employeesNextPageBtn" class="btn small" type="button">التالي ➡️</button>
+              </div>
+</div>
+            </div>
+
+            <!-- ============ ASSETS SCREEN ============ -->
+            <div id="assetsScreen" class="screen hidden">
+              <h2>📦 العهد الشخصية</h2>
+
+              <!-- Select Employee -->
+              <div class="inner-card">
+                <h3>اختيار الموظف</h3>
+                <div class="form-group">
+                  <label>اختر من القائمة</label>
+                  <select id="employeeSelect"></select>
+                </div>
+                <p style="text-align:center; margin:1rem 0;">أو</p>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label>الرقم القومي</label>
+                    <input type="text" id="assetSearchNationalId">
+                  </div>
+                  <div class="form-group">
+                    <label>الاسم</label>
+                    <input type="text" id="assetSearchName">
+                  </div>
+                  <div class="form-group full-width">
+                    <label>🔢 الرقم المسلسل / Serial No.</label>
+                    <input type="text" id="assetSearchSerial" placeholder="اكتب الرقم المسلسل للبحث في جميع العهد...">
+                  </div>
+                </div>
+                <button id="assetSearchButton" class="btn primary">🔍 بحث</button>
+              </div>
+
+              <div id="selectedEmployeeInfo" class="message" style="display:none;"></div>
+
+              <div id="assetSerialSearchResults" class="inner-card hidden" style="margin-top:1rem;">
+                <h3>🔍 نتائج البحث بالرقم المسلسل</h3>
+                <p id="assetSerialSearchCount" style="margin:0.5rem 0; color:#6b7280;"></p>
+                <div class="table-wrapper">
+                  <table class="modern-table" id="assetSerialResultsTable">
+                    <thead>
+                      <tr>
+                        <th>الموظف</th>
+                        <th>الرقم القومي</th>
+                        <th>نوع العهدة</th>
+                        <th>التفاصيل</th>
+                        <th>PDF</th>
+                        <th>الإجراء</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Assets Forms -->
+              <div id="assetsForms" style="display:none;">
+
+                <!-- شاشات عرض -->
+                <details class="asset-group">
+                  <summary><h3>📺 شاشات عرض</h3></summary>
+                  <form class="asset-form" data-asset-type="monitor">
+                    <div class="form-group">
+                      <label>مسلسل الشاشة</label>
+                      <input type="text" name="monitorSerial">
+                    </div>
+                    <div class="form-group">
+                      <label>ملاحظات</label>
+                      <textarea name="notes"></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label>استمارة العهدة (PDF)</label>
+                      <input type="file" name="pdf" accept=".pdf">
+                    </div>
+                    <button type="submit" class="btn success">✅ حفظ</button>
+                  </form>
+                </details>
+
+                <!-- هاتف مكتبى -->
+                <details class="asset-group">
+                  <summary><h3>📞 هاتف مكتبى</h3></summary>
+                  <form class="asset-form" data-asset-type="desk-phone">
+                    <div class="form-group">
+                      <label>نوع وموديل الهاتف</label>
+                      <input type="text" name="phoneModel">
+                    </div>
+                    <div class="form-group">
+                      <label>مسلسل الجهاز</label>
+                      <input type="text" name="deviceSerial">
+                    </div>
+                    <div class="form-group">
+                      <label>ملاحظات</label>
+                      <textarea name="notes"></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label>استمارة العهدة (PDF)</label>
+                      <input type="file" name="pdf" accept=".pdf">
+                    </div>
+                    <button type="submit" class="btn success">✅ حفظ</button>
+                  </form>
+                </details>
+
+                <!-- أجهزة G-Dell -->
+                <details class="asset-group">
+                  <summary><h3>💻 أجهزة G-Dell</h3></summary>
+                  <form class="asset-form" data-asset-type="g-dell">
+                    <div class="form-group">
+                      <label>مسلسل الجهاز</label>
+                      <input type="text" name="deviceSerial">
+                    </div>
+                    <div class="form-group">
+                      <label>مسلسل الشاشة</label>
+                      <input type="text" name="monitorSerial">
+                    </div>
+                    <div class="form-group">
+                      <label>ملاحظات</label>
+                      <textarea name="notes"></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label>استمارة العهدة (PDF)</label>
+                      <input type="file" name="pdf" accept=".pdf">
+                    </div>
+                    <button type="submit" class="btn success">✅ حفظ</button>
+                  </form>
+                </details>
+
+                <!-- أجهزة P-HP -->
+                <details class="asset-group">
+                  <summary><h3>💻 أجهزة P-HP</h3></summary>
+                  <form class="asset-form" data-asset-type="p-hp">
+                    <div class="form-group">
+                      <label>مسلسل الجهاز</label>
+                      <input type="text" name="deviceSerial">
+                    </div>
+                    <div class="form-group">
+                      <label>مسلسل الشاشة</label>
+                      <input type="text" name="monitorSerial">
+                    </div>
+                    <div class="form-group">
+                      <label>ملاحظات</label>
+                      <textarea name="notes"></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label>استمارة العهدة (PDF)</label>
+                      <input type="file" name="pdf" accept=".pdf">
+                    </div>
+                    <button type="submit" class="btn success">✅ حفظ</button>
+                  </form>
+                </details>
+
+                <!-- جهاز كمبيوتر مكتبى (PC) -->
+                <details class="asset-group">
+                  <summary><h3>🖥️ جهاز كمبيوتر مكتبى (PC)</h3></summary>
+                  <form class="asset-form" data-asset-type="desktop">
+                    <div class="form-group">
+                      <label>مسلسل الجهاز</label>
+                      <input type="text" name="deviceSerial">
+                    </div>
+                    <div class="form-group">
+                      <label>مسلسل الشاشة 1</label>
+                      <input type="text" name="monitor1Serial">
+                    </div>
+                    <div class="form-group">
+                      <label>مسلسل الشاشة 2</label>
+                      <input type="text" name="monitor2Serial">
+                    </div>
+                    <div class="form-group">
+                      <label>ملاحظات</label>
+                      <textarea name="notes"></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label>استمارة العهدة (PDF)</label>
+                      <input type="file" name="pdf" accept=".pdf">
+                    </div>
+                    <button type="submit" class="btn success">✅ حفظ</button>
+                  </form>
+                </details>
+
+                <!-- جهاز حاسب آلي محمول (LAPTOP) -->
+                <details class="asset-group">
+                  <summary><h3>💼 جهاز حاسب آلي محمول (LAPTOP)</h3></summary>
+                  <form class="asset-form" data-asset-type="laptop">
+                    <div class="form-group">
+                      <label>نوع وموديل الجهاز</label>
+                      <input type="text" name="deviceModel">
+                    </div>
+                    <div class="form-group">
+                      <label>مسلسل الجهاز</label>
+                      <input type="text" name="deviceSerial">
+                    </div>
+                    <div class="form-group">
+                      <label>ملاحظات</label>
+                      <textarea name="notes"></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label>استمارة العهدة (PDF)</label>
+                      <input type="file" name="pdf" accept=".pdf">
+                    </div>
+                    <button type="submit" class="btn success">✅ حفظ</button>
+                  </form>
+                </details>
+
+                <!-- طابعة -->
+                <details class="asset-group">
+                  <summary><h3>🖨️ طابعة</h3></summary>
+                  <form class="asset-form" data-asset-type="printer">
+                    <div class="form-group">
+                      <label>نوع وموديل الجهاز</label>
+                      <input type="text" name="deviceModel">
+                    </div>
+                    <div class="form-group">
+                      <label>مسلسل الجهاز</label>
+                      <input type="text" name="deviceSerial">
+                    </div>
+                    <div class="form-group">
+                      <label>ملاحظات</label>
+                      <textarea name="notes"></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label>استمارة العهدة (PDF)</label>
+                      <input type="file" name="pdf" accept=".pdf">
+                    </div>
+                    <button type="submit" class="btn success">✅ حفظ</button>
+                  </form>
+                </details>
+
+                <!-- ماكينة تصوير -->
+                <details class="asset-group">
+                  <summary><h3>📠 ماكينة تصوير</h3></summary>
+                  <form class="asset-form" data-asset-type="copier">
+                    <div class="form-group">
+                      <label>نوع وموديل الجهاز</label>
+                      <input type="text" name="deviceModel">
+                    </div>
+                    <div class="form-group">
+                      <label>مسلسل الجهاز</label>
+                      <input type="text" name="deviceSerial">
+                    </div>
+                    <div class="form-group">
+                      <label>ملاحظات</label>
+                      <textarea name="notes"></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label>استمارة العهدة (PDF)</label>
+                      <input type="file" name="pdf" accept=".pdf">
+                    </div>
+                    <button type="submit" class="btn success">✅ حفظ</button>
+                  </form>
+                </details>
+
+                <!-- أصول أخرى -->
+                <details class="asset-group">
+                  <summary><h3>📋 أصول أخرى</h3></summary>
+                  <form class="asset-form" data-asset-type="other">
+                    <div class="form-group">
+                      <label>وصف الجهاز</label>
+                      <input type="text" name="deviceDescription">
+                    </div>
+                    <div class="form-group">
+                      <label>مسلسل الجهاز</label>
+                      <input type="text" name="deviceSerial">
+                    </div>
+                    <div class="form-group">
+                      <label>ملاحظات</label>
+                      <textarea name="notes"></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label>استمارة العهدة (PDF)</label>
+                      <input type="file" name="pdf" accept=".pdf">
+                    </div>
+                    <button type="submit" class="btn success">✅ حفظ</button>
+                  </form>
+                </details>
+
+                <button id="saveCurrentAssetButton" class="btn primary full mt-1">💾 حفظ العهدة الحالية</button>
+
+                <hr style="margin: 2rem 0;">
+                
+                <!-- زر QR Code -->
+                <div style="text-align:center; margin-bottom:1rem;">
+                  <button id="generateQRAssets" class="btn" style="background:#8b5cf6; color:#fff;">📱 إنشاء QR CODE</button>
+                </div>
+
+                <!-- جدول العهد المسجلة -->
+                <h3>📋 العهد المسجلة للموظف</h3>
+                <div class="table-wrapper">
+                  <table class="modern-table" id="assetsTable">
+                    <thead>
+                      <tr>
+                        <th>نوع العهدة</th>
+                        <th>التفاصيل</th>
+                        <th>PDF</th>
+                        <th>الإجراءات</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- سيتم ملء العهد هنا -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- ============ SEARCH SCREEN ============ -->
+            <div id="searchScreen" class="screen hidden">
+              <h2>🔍 البحث عن موظف وعهده</h2>
+              <div class="inner-card">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label>الرقم القومي</label>
+                    <input type="text" id="searchNationalId">
+                  </div>
+                  <div class="form-group">
+                    <label>الاسم</label>
+                    <input type="text" id="searchName">
+                  </div>
+                </div>
+                <button id="searchEmployeeButton" class="btn primary">🔍 بحث</button>
+              </div>
+
+              <!-- Serial No Search (Global) -->
+              <div class="inner-card" style="margin-top:1rem;">
+                <h3>🔢 البحث بالرقم المسلسل / Serial No.</h3>
+                <div class="form-group">
+                  <label>الرقم المسلسل</label>
+                  <input type="text" id="searchSerialNo" class="search-input" placeholder="اكتب الرقم المسلسل للبحث في جميع العهد...">
+                </div>
+              </div>
+
+              <div id="searchSerialResults" class="inner-card hidden" style="margin-top:1rem;">
+                <h3>🔍 نتائج البحث بالرقم المسلسل</h3>
+                <p id="searchSerialCount" style="margin:0.5rem 0; color:#6b7280;"></p>
+                <div class="table-wrapper">
+                  <table class="modern-table" id="searchSerialResultsTable">
+                    <thead>
+                      <tr>
+                        <th>الموظف</th>
+                        <th>الرقم القومي</th>
+                        <th>نوع العهدة</th>
+                        <th>التفاصيل</th>
+                        <th>PDF</th>
+                        <th>الإجراء</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+
+
+              <div id="searchResult" class="hidden">
+                <div class="inner-card">
+                  <h3>بيانات الموظف</h3>
+                  <div id="searchEmployeeInfo"></div>
+                </div>
+                
+                <!-- زر QR Code في البحث -->
+                <div style="text-align:center; margin:1rem 0;">
+                  <button id="generateQRSearch" class="btn" style="background:#8b5cf6; color:#fff;">📱 إنشاء QR CODE</button>
+                </div>
+
+                <div class="inner-card">
+                  <h3>العهد المسجلة</h3>
+                  <div id="searchAssetsInfo"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ============ STORES SCREEN ============ -->
+            <div id="storesScreen" class="screen hidden">
+              <h2>🏢 المخازن</h2>
+
+              <div class="inner-card">
+                <h3>إضافة حركة مخزنية</h3>
+                <form id="storeForm">
+                  <div class="form-grid">
+                    <div class="form-group">
+                      <label>اسم الجهة *</label>
+                      <input type="text" id="storeDeptName" required>
+                    </div>
+                    <div class="form-group">
+                      <label>نوع المخزن *</label>
+                      <select id="storeType" required>
+                        <option value="">-- اختر --</option>
+                        <option value="مستديم">مستديم</option>
+                        <option value="مستهلك">مستهلك</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>نوع الحركة *</label>
+                      <select id="storeMovementType" required>
+                        <option value="">-- اختر --</option>
+                        <option value="نقل عهدة">نقل عهدة</option>
+                        <option value="مستلم اول">مستلم اول</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>تاريخ الطلب *</label>
+                      <input type="date" id="storeRequestDate" required>
+                    </div>
+                    <div class="form-group">
+                      <label>رقم الإذن *</label>
+                      <input type="text" id="storePermissionNo" required>
+                    </div>
+                    <div class="form-group">
+                      <label>اسم الطالب *</label>
+                      <input type="text" id="storeRequesterName" required>
+                    </div>
+                    <div class="form-group">
+                      <label>الرقم القومى للطالب *</label>
+                      <input type="text" id="storeRequesterNid" required>
+                    </div>
+                    <div class="form-group">
+                      <label>اسم المستلم *</label>
+                      <input type="text" id="storeReceiverName" required>
+                    </div>
+                    <div class="form-group">
+                      <label>الرقم القومى للمستلم *</label>
+                      <input type="text" id="storeReceiverNid" required>
+                    </div>
+                    <div class="form-group">
+                      <label>نوع العهدة *</label>
+                      <select id="storeAssetCategory" required>
+                        <option value="">-- اختر --</option>
+                        <option value="جهاز حاسب الى مكتبى">جهاز حاسب الى مكتبى</option>
+                        <option value="جهاز حاسب الى محمول">جهاز حاسب الى محمول</option>
+                        <option value="جهاز العاصمة G">جهاز العاصمة G</option>
+                        <option value="جهاز العاصمة P">جهاز العاصمة P</option>
+                        <option value="شاشة تلفاز">شاشة تلفاز</option>
+                        <option value="ايباد">ايباد</option>
+                        <option value="ماك بوك">ماك بوك</option>
+                        <option value="هارد ديسك خارجى">هارد ديسك خارجى</option>
+                        <option value="فلاشة تخزين">فلاشة تخزين</option>
+                        <option value="فلاشة واى فاى">فلاشة واى فاى</option>
+                        <option value="KVM">KVM</option>
+                        <option value="تليفون مكتبى">تليفون مكتبى</option>
+                        <option value="طابعة ليزر ابيض واسود">طابعة ليزر ابيض واسود</option>
+                        <option value="طابعة الوان">طابعة الوان</option>
+                        <option value="ماوس ليزر">ماوس ليزر</option>
+                        <option value="اخرى">اخرى</option>
+                      </select>
+                    </div>
+                    <div class="form-group full-width">
+                      <label>وصف الصنف *</label>
+                      <textarea id="storeDescription" required></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                      <label>استمارة العهدة (PDF) *</label>
+                      <input type="file" id="storePdf" accept="application/pdf" required>
+                    </div>
+                    <div class="form-group full-width">
+                      <button type="submit" class="btn success full">حفظ الحركة المخزنية</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              <h3 style="margin-top: 1.5rem;">📋 سجلات المخازن</h3>
+              <div class="table-wrapper">
+                <table class="modern-table" id="storesTable">
+                  <thead>
+                    <tr>
+                      <th>اسم الجهة</th>
+                      <th>نوع المخزن</th>
+                      <th>نوع الحركة</th>
+                      <th>تاريخ الطلب</th>
+                      <th>رقم الإذن</th>
+                      <th>اسم الطالب</th>
+                      <th>رقم قومى الطالب</th>
+                      <th>اسم المستلم</th>
+                      <th>رقم قومى المستلم</th>
+                      <th>نوع العهدة</th>
+                      <th>وصف الصنف</th>
+                      <th>استمارة العهدة</th>
+                      <th>الإجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+
+          
+
+            <!-- ============ STORE BALANCES SCREEN ============ -->
+            <div id="storeBalancesScreen" class="screen hidden">
+              <h2>📦 أرصدة العهد المخزنية</h2>
+            
+              <div class="inner-card">
+                <h3>إدخال الرصيد المبدئي (وسيظهر المتبقي)</h3>
+                <p class="hint-text">الأصناف المحددة هنا: (مكتبي / محمول / العاصمة G / العاصمة P / شاشة تلفاز / ايباد). عند تسجيل عهدة بنفس الصنف في شاشة المخازن سيتم خصم 1 تلقائيًا.</p>
+            
+                <div class="table-wrapper">
+                  <table id="storeBalancesTable" class="data-table">
+                    <thead>
+                      <tr>
+                        <th>الصنف</th>
+                        <th>الرصيد المبدئي</th>
+                        <th>المتبقي</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><td colspan="3" style="text-align:center;color:#6b7280">جاري التحميل...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+            
+                <div class="actions-row" >
+                  <button id="saveStoreBalancesBtn" class="btn primary">💾 حفظ الرصيد</button>
+                  <div id="storeBalancesMsg" class="message"></div>
+                </div>
+              </div>
+            </div>
+            <!-- ============ END STORE BALANCES SCREEN ============ -->
+
+</div><!-- end content -->
+        </div><!-- end dashboard -->
+      </main>
+    </section>
+
+  </div>
+
+<!-- end app-container -->
+
+  <!-- Employee Edit Modal -->
+  <div id="employeeEditModal" class="modal hidden">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>تعديل بيانات الموظف</h3>
+        <button type="button" id="employeeEditClose" class="modal-close">&times;</button>
+      </div>
+      <form id="employeeEditForm">
+        <div class="form-group">
+          <label>الرقم القومي</label>
+          <input type="text" id="editEmpNationalId" readonly>
+        </div>
+        <div class="form-group">
+          <label>الاسم</label>
+          <input type="text" id="editEmpName" required>
+        </div>
+        <div class="form-group">
+          <label>البريد الإلكتروني</label>
+          <input type="email" id="editEmpEmail">
+        </div>
+        <div class="form-group">
+          <label>الوظيفة</label>
+          <input type="text" id="editEmpJob">
+        </div>
+        <div class="form-group">
+          <label>القطاع</label>
+          <input type="text" id="editEmpSector">
+        </div>
+        <div class="form-group">
+          <label>الإدارة المركزية</label>
+          <input type="text" id="editEmpCentralAdmin">
+        </div>
+        <div class="form-group">
+          <label>الإدارة العامة</label>
+          <input type="text" id="editEmpGeneralAdmin">
+        </div>
+        <div class="form-group">
+          <label>الإدارة الفرعية</label>
+          <input type="text" id="editEmpSubAdmin">
+        </div>
+        <div class="form-group">
+          <label>التليفون</label>
+          <input type="text" id="editEmpPhone">
+        </div>
+        <div class="form-group">
+          <label>العنوان</label>
+          <input type="text" id="editEmpLocation">
+        </div>
+        <button type="submit" class="btn primary full">✅ حفظ التعديلات</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Asset Edit Modal -->
+  <div id="assetEditModal" class="modal hidden">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>تعديل العهدة</h3>
+        <button type="button" id="assetEditClose" class="modal-close">&times;</button>
+      </div>
+      <form id="assetEditForm">
+        <div id="assetEditFieldsContainer">
+          <!-- سيتم ملء الحقول ديناميكياً -->
+        </div>
+        <button type="submit" class="btn primary full">✅ حفظ التعديلات</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- QR Code Modal -->
+  <div id="qrCodeModal" class="modal hidden">
+    <div class="modal-dialog qr-dialog">
+      <div class="modal-header">
+        <h3>📱 QR Code - العهد الشخصية</h3>
+        <button type="button" id="qrCodeClose" class="modal-close">&times;</button>
+      </div>
+      <div class="qr-content">
+        <div class="qr-info">
+          <h4 id="qrEmployeeName"></h4>
+        </div>
+        <div id="qrCodeContainer" class="qr-container"></div>
+        <button id="downloadQRButton" class="btn primary full mt-1">📥 تحميل QR Code + PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK (v9 compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+  
+  <!-- html2canvas للـ PDF (من المصدر الرسمي) -->
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  
+  <!-- jsPDF (بدون integrity) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
+  <!-- QRCode.js (من unpkg - أكثر استقرار وبدون مشاكل integrity) -->
+  <script src="https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+  <!-- Fallback للتأكد من تحميل QRCode -->
+  <script>
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      if (typeof QRCode === 'undefined') {
+        console.warn('⚠️ QRCode not loaded, trying fallback...');
+        const script = document.createElement('script');
+        script.src = 'https://davidshimjs.github.io/qrcodejs/qrcode.min.js';
+        script.onload = function() {
+          console.log('✅ QRCode loaded via fallback');
+        };
+        script.onerror = function() {
+          console.error('❌ Fallback also failed');
+          alert('⚠️ فشل تحميل مكتبة QR Code. برجاء التحقق من الاتصال بالإنترنت.');
+        };
+        document.head.appendChild(script);
+      } else {
+        console.log('✅ QRCode loaded successfully');
+      }
+    }, 500);
+  });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
